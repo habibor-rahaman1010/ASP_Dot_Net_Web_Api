@@ -33,6 +33,28 @@ namespace CountryApi.Controllers
             }
         }
 
+        /*//insert multiple country
+        [HttpPost]
+        public async Task<IActionResult> AddCountries(IList<Country> countries)
+        {
+            try
+            {
+                if (countries == null || countries.Count == 0)
+                {
+                    return BadRequest("No countries provided.");
+                }
+
+                await _context.Countries.AddRangeAsync(countries);
+                await _context.SaveChangesAsync();
+
+                return Ok("Countries added successfully");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }*/
+
         //Get all countries
         [HttpGet]
         public async Task<ActionResult<List<Country>>> GetAllCountries()
@@ -58,7 +80,7 @@ namespace CountryApi.Controllers
         //Get a country by id
         [HttpGet]
         [Route("{id}")]
-        public async Task<ActionResult<Country>> GetCountryById(int id)
+        public async Task<ActionResult<Country>> GetCountryById(Guid id)
         {
             try
             {
@@ -83,7 +105,7 @@ namespace CountryApi.Controllers
         [HttpPut]
         [Route("{id}")]
 
-        public async Task<IActionResult> UpdateCountry(int id, Country c)
+        public async Task<IActionResult> UpdateCountry(Guid id, Country c)
         {
             try
             {
@@ -113,7 +135,7 @@ namespace CountryApi.Controllers
         [HttpDelete]
         [Route("{id}")]
 
-        public async Task<IActionResult> DeleteCountry(int id)
+        public async Task<IActionResult> DeleteCountry(Guid id)
         {
             try
             {

@@ -24,25 +24,29 @@ namespace CountryApi.Migrations
 
             modelBuilder.Entity("CountryApi.Model.Country", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("uniqueidentifier");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<double?>("Area")
+                    b.Property<double>("Area")
                         .HasColumnType("float");
 
                     b.Property<string>("Capital")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Currency")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsFreedom")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("Population")
+                    b.Property<int>("Population")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
