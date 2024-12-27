@@ -36,4 +36,4 @@ jobs:
 
       # Publish the build
       - name: Publish the project
-        run: dotnet publish ./CountryApi/CountryApi.csproj -c Release -o ./publish
+        run: dotnet publish ./CountryApi/CountryApi/CountryApi.csproj -c Release -o ./publish
