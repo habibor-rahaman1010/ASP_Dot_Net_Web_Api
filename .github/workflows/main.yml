@@ -42,19 +42,23 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      # Log in to Docker Hub (or another registry)
+      # Set up Docker Buildx
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      # Log in to Docker Hub with hardcoded credentials
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          username: 'habibor.rahaman1010@gmail.com'
+          password: 'dockerc++c++c#'
 
-      # Build and push the Docker image
+      # Build and push Docker image
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
         with:
           context: ./CountryApi
           file: ./CountryApi/CountryApi/Dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/countryapi:latest
+          tags: 'habibor.rahaman1010/countryapi:latest'
           
