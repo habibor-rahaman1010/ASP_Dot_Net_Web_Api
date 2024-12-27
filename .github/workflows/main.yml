@@ -9,46 +9,59 @@ on:
       - develop
 
 jobs:
-  setup:
+  build:
     runs-on: ubuntu-latest
 
     steps:
+      # Checkout the code
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
+      # Set up .NET 8.0 SDK
+      - name: Set up .NET Core SDK
+        uses: actions/setup-dotnet@v3
         with:
-          node-version: '16' # Specify your Node.js version
+          dotnet-version: '8.0'
 
-      - name: Install dependencies
-        run: npm install
+      # Restore dependencies
+      - name: Restore dependencies
+        run: dotnet restore
 
-      - name: Run tests
-        run: npm test
-
+      # Build the project
       - name: Build the project
-        run: npm run build
+        run: dotnet build --configuration Release --no-restore
 
+      # Run tests
+      - name: Run tests
+        run: dotnet test --no-build --verbosity normal
+
+      # Publish the build
+      - name: Publish the project
+        run: dotnet publish -c Release -o ./publish
+
+      # Upload the published build as an artifact
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
           name: countryapi-build
-          path: build/ # Adjust this path based on your project structure
+          path: ./publish/
 
   deploy:
     runs-on: ubuntu-latest
-    needs: setup
+    needs: build
 
     steps:
+      # Download the artifact
       - name: Download artifact
         uses: actions/download-artifact@v3
         with:
           name: countryapi-build
 
+      # Deploy to server (example deployment)
       - name: Deploy to server
         run: |
           echo "Deploying the project..."
-          # Example: Replace this with your deployment logic
-          # ssh username@server "mkdir -p /var/www/countryapi && rm -rf /var/www/countryapi/*"
-          # scp -r build/* username@server:/var/www/countryapi/
+          # Replace with your deployment logic
+          # Example:
+          # scp -r ./countryapi-build/* user@yourserver:/var/www/countryapi/
+          # ssh user@yourserver "sudo systemctl restart your-api-service"
