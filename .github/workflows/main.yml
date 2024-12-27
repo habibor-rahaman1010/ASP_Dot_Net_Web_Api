@@ -60,5 +60,6 @@ jobs:
           context: ./CountryApi
           file: ./CountryApi/CountryApi/Dockerfile
           push: true
-          tags: 'habibor.rahaman1010/countryapi:latest'
+          tags: 'docker.io/habibor144369/countryapi:latest
+'
           
