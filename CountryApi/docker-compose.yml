@@ -3,8 +3,15 @@ services:
     web:
         build: 
             context: .
-            dockerfile: Onix.Api/Dockerfile
-        image: onix-api
+            dockerfile: CountryApi/Dockerfile
+        image: country-api
+        env_file: 
+            - web.env
+        volumes:
+            - countryApi-data:/app/Logs
         ports:
             - "8080:80"
-        entrypoint: ["dotnet", "Onix.Api.dll"]
+        entrypoint: ["dotnet", "CountryApi.dll"]
+volumes:
+    countryApi-data:
+        external: true
