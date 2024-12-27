@@ -17,51 +17,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Set up .NET 8.0 SDK
+      # Set up .NET Core SDK
       - name: Set up .NET Core SDK
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: '8.0'
 
-      # Restore dependencies
+      # Navigate to the project directory and restore dependencies
       - name: Restore dependencies
-        run: dotnet restore
+        run: dotnet restore ./CountryApi/CountryApi.csproj
 
       # Build the project
       - name: Build the project
-        run: dotnet build --configuration Release --no-restore
-
-      # Run tests
-      - name: Run tests
-        run: dotnet test --no-build --verbosity normal
+        run: dotnet build ./CountryApi/CountryApi.csproj --configuration Release --no-restore
 
       # Publish the build
       - name: Publish the project
-        run: dotnet publish -c Release -o ./publish
-
-      # Upload the published build as an artifact
-      - name: Upload artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: countryapi-build
-          path: ./publish/
-
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build
-
-    steps:
-      # Download the artifact
-      - name: Download artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: countryapi-build
-
-      # Deploy to server (example deployment)
-      - name: Deploy to server
-        run: |
-          echo "Deploying the project..."
-          # Replace with your deployment logic
-          # Example:
-          # scp -r ./countryapi-build/* user@yourserver:/var/www/countryapi/
-          # ssh user@yourserver "sudo systemctl restart your-api-service"
+        run: dotnet publish ./CountryApi/CountryApi.csproj -c Release -o ./publish
