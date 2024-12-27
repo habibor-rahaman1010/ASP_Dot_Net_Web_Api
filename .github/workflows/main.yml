@@ -1,0 +1,54 @@
+name: CountryApi CI/CD
+
+on:
+  push:
+    branches:
+      - feature/webApi-01
+  pull_request:
+    branches:
+      - feature/webApi-01
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16' # Specify your Node.js version
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm test
+
+      - name: Build the project
+        run: npm run build
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: countryapi-build
+          path: build/ # Adjust this path based on your project structure
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: setup
+
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: countryapi-build
+
+      - name: Deploy to server
+        run: |
+          echo "Deploying the project..."
+          # Example: Replace this with your deployment logic
+          # ssh username@server "mkdir -p /var/www/countryapi && rm -rf /var/www/countryapi/*"
+          # scp -r build/* username@server:/var/www/countryapi/
