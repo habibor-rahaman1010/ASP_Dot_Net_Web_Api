@@ -25,11 +25,14 @@ jobs:
 
       # Navigate to the project directory and restore dependencies
       - name: Restore dependencies
-        run: dotnet restore ./CountryApi/CountryApi.csproj
+        run: dotnet restore ./CountryApi/CountryApi/CountryApi.csproj
+
+      - name: Clean previous builds
+        run: dotnet clean ./CountryApi/CountryApi/CountryApi.csproj --configuration Release
 
       # Build the project
       - name: Build the project
-        run: dotnet build ./CountryApi/CountryApi.csproj --configuration Release --no-restore
+        run: dotnet build ./CountryApi/CountryApi/CountryApi.csproj --configuration Release --no-restore
 
       # Publish the build
       - name: Publish the project
