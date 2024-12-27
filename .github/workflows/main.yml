@@ -3,10 +3,10 @@ name: CountryApi CI/CD
 on:
   push:
     branches:
-      - feature/webApi-01
+      - develop
   pull_request:
     branches:
-      - feature/webApi-01
+      - develop
 
 jobs:
   setup:
