@@ -1,0 +1,10 @@
+version: "3"
+services:
+    web:
+        build: 
+            context: .
+            dockerfile: Onix.Api/Dockerfile
+        image: onix-api
+        ports:
+            - "8080:80"
+        entrypoint: ["dotnet", "Onix.Api.dll"]
