@@ -1,5 +1,6 @@
 ﻿using CountryApi.DataAccessLayer;
 using CountryApi.Model;
+using Mapster;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -19,11 +20,12 @@ namespace CountryApi.Controllers
 
         //insert country
         [HttpPost]
-        public async Task<IActionResult> AddCountry(Country country)
+        public async Task<IActionResult> AddCountry(CountryDto country)
         {
             try
             {
-                await _context.AddAsync(country);
+                var countryData = country.Adapt<Country>();
+                await _context.AddAsync(countryData);
                 await _context.SaveChangesAsync();
                 return Ok("Country Added");
             }
@@ -33,42 +35,21 @@ namespace CountryApi.Controllers
             }
         }
 
-        /*//insert multiple country
-        [HttpPost]
-        public async Task<IActionResult> AddCountries(IList<Country> countries)
-        {
-            try
-            {
-                if (countries == null || countries.Count == 0)
-                {
-                    return BadRequest("No countries provided.");
-                }
-
-                await _context.Countries.AddRangeAsync(countries);
-                await _context.SaveChangesAsync();
-
-                return Ok("Countries added successfully");
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }*/
-
         //Get all countries
         [HttpGet]
-        public async Task<ActionResult<List<Country>>> GetAllCountries()
+        public async Task<ActionResult<List<CountryDto>>> GetAllCountries()
         {
             try
             {
                 List<Country> countries = await _context.Countries.ToListAsync();
-                if (countries.Count < 0)
+                if (countries.Count == 0)  // Corrected condition to check for empty list
                 {
-                    return NotFound("Not any countries are exist in database!");
+                    return NotFound("No countries exist in the database!");
                 }
                 else
                 {
-                    return Ok(countries);
+                    var countryDtos = countries.Adapt<List<CountryDto>>(); 
+                    return Ok(countryDtos);
                 }
             }
             catch (Exception error)
@@ -80,21 +61,21 @@ namespace CountryApi.Controllers
         //Get a country by id
         [HttpGet]
         [Route("{id}")]
-        public async Task<ActionResult<Country>> GetCountryById(Guid id)
+        public async Task<ActionResult<CountryDto>> GetCountryById(Guid id)
         {
             try
             {
                 Country? country = await _context.Countries.FirstOrDefaultAsync(x => x.Id == id);
                 if (country != null)
                 {
-                    return Ok(country);
+                    var countryDto = country.Adapt<CountryDto>();  // Map Country to CountryDto
+                    return Ok(countryDto);
                 }
                 else
                 {
-                    return NotFound("Country is not found");
+                    return NotFound("Country not found");
                 }
             }
-
             catch (Exception error)
             {
                 return BadRequest(error.Message);
@@ -104,21 +85,16 @@ namespace CountryApi.Controllers
         // Update a country by id
         [HttpPut]
         [Route("{id}")]
-
-        public async Task<IActionResult> UpdateCountry(Guid id, Country c)
+        public async Task<IActionResult> UpdateCountry(Guid id, UpdateDto countryDto)
         {
             try
             {
                 Country? country = await _context.Countries.FirstOrDefaultAsync(y => y.Id == id);
                 if (country != null)
                 {
-                    country.Name = c.Name;
-                    country.Capital = c.Capital;
-                    country.Population = c.Population;
-                    country.Area = c.Area;
-                    country.Currency = c.Currency;
+                    country = countryDto.Adapt(country);
                     await _context.SaveChangesAsync();
-                    return Ok("Country Updated Succesfully");
+                    return Ok("Country Updated Successfully");
                 }
                 else
                 {
@@ -131,10 +107,9 @@ namespace CountryApi.Controllers
             }
         }
 
-        //Delete a country by id
+        // Delete a country by id
         [HttpDelete]
         [Route("{id}")]
-
         public async Task<IActionResult> DeleteCountry(Guid id)
         {
             try
@@ -157,4 +132,27 @@ namespace CountryApi.Controllers
             }
         }
     }
+
+
+    /*//insert multiple country
+    [HttpPost]
+    public async Task<IActionResult> AddCountries(IList<Country> countries)
+    {
+        try
+        {
+            if (countries == null || countries.Count == 0)
+            {
+                return BadRequest("No countries provided.");
+            }
+
+            await _context.Countries.AddRangeAsync(countries);
+            await _context.SaveChangesAsync();
+
+            return Ok("Countries added successfully");
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }*/
 }
