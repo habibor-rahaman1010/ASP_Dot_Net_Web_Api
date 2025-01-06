@@ -1,7 +1,6 @@
 ﻿using CountryApi.DataAccessLayer;
 using CountryApi.Model;
 using Mapster;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -42,7 +41,7 @@ namespace CountryApi.Controllers
             try
             {
                 List<Country> countries = await _context.Countries.ToListAsync();
-                if (countries.Count == 0)  // Corrected condition to check for empty list
+                if (countries.Count == 0)
                 {
                     return NotFound("No countries exist in the database!");
                 }
@@ -68,7 +67,7 @@ namespace CountryApi.Controllers
                 Country? country = await _context.Countries.FirstOrDefaultAsync(x => x.Id == id);
                 if (country != null)
                 {
-                    var countryDto = country.Adapt<CountryDto>();  // Map Country to CountryDto
+                    var countryDto = country.Adapt<CountryDto>();
                     return Ok(countryDto);
                 }
                 else

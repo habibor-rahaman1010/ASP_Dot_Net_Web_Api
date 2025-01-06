@@ -1,6 +1,5 @@
 ﻿using CountryApi.Model;
 using Mapster;
-using System.Reflection;
 
 namespace CountryApi.MapsterProfile
 {
@@ -29,3 +28,23 @@ namespace CountryApi.MapsterProfile
         }
     }
 }
+
+
+
+
+
+
+/*
+public static class MapsterExtensions
+{
+    public static void AddMapsterConfigurations(this IServiceCollection services)
+    {
+        TypeAdapterConfig<SourceClass, DestinationClass>
+            .NewConfig()
+            .Map(dest => dest.Property1, src => src.AnotherProperty);
+
+        // Apply global settings
+        TypeAdapterConfig.GlobalSettings.Scan(typeof(SourceClass).Assembly);
+    }
+}
+*/
