@@ -23,7 +23,7 @@ namespace CountryApi.Controllers
         {
             try
             {
-                var countryData = country.Adapt<Country>();
+                var countryData = await country.BuildAdapter().AdaptToTypeAsync<Country>();
                 await _context.AddAsync(countryData);
                 await _context.SaveChangesAsync();
                 return Ok("Country Added");
@@ -47,7 +47,7 @@ namespace CountryApi.Controllers
                 }
                 else
                 {
-                    var countryDtos = countries.Adapt<List<CountryDto>>(); 
+                    var countryDtos = await countries.BuildAdapter().AdaptToTypeAsync<List<CountryDto>>(); 
                     return Ok(countryDtos);
                 }
             }
@@ -67,7 +67,7 @@ namespace CountryApi.Controllers
                 Country? country = await _context.Countries.FirstOrDefaultAsync(x => x.Id == id);
                 if (country != null)
                 {
-                    var countryDto = country.Adapt<CountryDto>();
+                    var countryDto = await country.BuildAdapter().AdaptToTypeAsync<CountryDto>();
                     return Ok(countryDto);
                 }
                 else
@@ -92,7 +92,7 @@ namespace CountryApi.Controllers
                 Country? country = await _context.Countries.FirstOrDefaultAsync(y => y.Id == id);
                 if (country != null)
                 {
-                    country = countryDto.Adapt(country);
+                    country = await countryDto.BuildAdapter().AdaptToAsync(country);
                     await _context.SaveChangesAsync();
                     return Ok("Country Updated Successfully");
                 }

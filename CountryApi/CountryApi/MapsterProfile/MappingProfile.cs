@@ -10,6 +10,7 @@ namespace CountryApi.MapsterProfile
             config.NewConfig<CountryDto, Country>();
 
             config.NewConfig<UpdateDto, Country>();
+            
 
 
            /* // Define the mapping between CountryDto and Country
