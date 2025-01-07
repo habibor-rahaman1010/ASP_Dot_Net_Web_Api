@@ -7,7 +7,9 @@ namespace CountryApi.MapsterProfile
     {
         public void Register(TypeAdapterConfig config)
         {
-            config.NewConfig<Country, CountryDto>();
+            config.NewConfig<CountryDto, Country>();
+
+            config.NewConfig<UpdateDto, Country>();
 
 
            /* // Define the mapping between CountryDto and Country

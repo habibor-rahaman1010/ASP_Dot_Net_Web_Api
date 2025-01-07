@@ -55,6 +55,7 @@ public class Program()
 
             //Mapster Registration here...
             TypeAdapterConfig.GlobalSettings.Apply(new MappingProfile());
+            //TypeAdapterConfig.GlobalSettings.Scan(typeof(MappingProfile).Assembly);
 
             var app = builder.Build();
 
