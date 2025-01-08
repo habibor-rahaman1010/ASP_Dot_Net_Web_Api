@@ -2,7 +2,6 @@ using CountryApi.DataAccessLayer;
 using CountryApi.MapsterProfile;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Serilog.Sinks.MSSqlServer;
 using Serilog;
 using Serilog.Events;
@@ -31,7 +30,6 @@ public class Program()
 
         try
         {
-
             Log.Information("Application Starting...");
 
             //Log write into database
@@ -77,11 +75,11 @@ public class Program()
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.ToString());
+            Log.Fatal(ex.ToString(), "Faild to start application!");
         }
         finally
         {
-            Console.WriteLine("Application Crush!");
+            Log.CloseAndFlush();
         }
     }
 }

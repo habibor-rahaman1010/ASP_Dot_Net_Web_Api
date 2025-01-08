@@ -21,5 +21,6 @@ namespace CountryApi.DataAccessLayer
         }
 
         public DbSet<Country> Countries { get; set; }
+        public DbSet<ApplicationLog> ApplicationLogs { get; set; }
     }
 }

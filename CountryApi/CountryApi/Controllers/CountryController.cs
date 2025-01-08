@@ -11,10 +11,12 @@ namespace CountryApi.Controllers
     public class CountryController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly ILogger<CountryController> _logger;
 
-        public CountryController(ApplicationDbContext context)
+        public CountryController(ApplicationDbContext context, ILogger<CountryController> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         //insert country
@@ -26,10 +28,12 @@ namespace CountryApi.Controllers
                 var countryData = await country.BuildAdapter().AdaptToTypeAsync<Country>();
                 await _context.AddAsync(countryData);
                 await _context.SaveChangesAsync();
+                _logger.LogInformation("Country Added");
                 return Ok("Country Added");
             }
             catch (Exception ex)
             {
+                _logger.LogInformation($"{ex.Message}", ex.ToString());
                 return BadRequest(ex.Message);
             }
         }
@@ -43,11 +47,13 @@ namespace CountryApi.Controllers
                 List<Country> countries = await _context.Countries.ToListAsync();
                 if (countries.Count == 0)
                 {
+                    _logger.LogInformation("No countries exist in the database!");
                     return NotFound("No countries exist in the database!");
                 }
                 else
                 {
-                    var countryDtos = await countries.BuildAdapter().AdaptToTypeAsync<List<CountryDto>>(); 
+                    var countryDtos = await countries.BuildAdapter().AdaptToTypeAsync<List<CountryDto>>();
+                    _logger.LogInformation("Retrive all countries");
                     return Ok(countryDtos);
                 }
             }
@@ -68,10 +74,12 @@ namespace CountryApi.Controllers
                 if (country != null)
                 {
                     var countryDto = await country.BuildAdapter().AdaptToTypeAsync<CountryDto>();
+                    _logger.LogInformation($"Country ID: {countryDto.Id}");
                     return Ok(countryDto);
                 }
                 else
                 {
+                    _logger.LogInformation($"Country not found {id}");
                     return NotFound("Country not found");
                 }
             }
