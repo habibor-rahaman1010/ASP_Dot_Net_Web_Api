@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Serilog.Sinks.MSSqlServer;
 using Serilog;
 using Serilog.Events;
+using CountryApi.ServiceCollectionExtensions;
 
 public class Program()
 {
@@ -54,6 +55,8 @@ public class Program()
             //Mapster Registration here...
             TypeAdapterConfig.GlobalSettings.Apply(new MappingProfile());
             //TypeAdapterConfig.GlobalSettings.Scan(typeof(MappingProfile).Assembly);
+
+            builder.Services.AddFluentValidatorRegister();
 
             var app = builder.Build();
 
