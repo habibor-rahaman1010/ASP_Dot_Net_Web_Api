@@ -12,11 +12,11 @@ namespace CountryApi.ModelValidators
 
             RuleFor(x => x.Name)
                 .NotEmpty().WithMessage("Name is required.")
-                .Length(2, 100).WithMessage("Name must be between 2 and 100 characters.");
+                .Length(10, 100).WithMessage("Name must be between 2 and 100 characters.");
 
             RuleFor(x => x.Capital)
                 .NotEmpty().WithMessage("Capital is required.")
-                .Length(2, 100).WithMessage("Capital must be between 2 and 100 characters.");
+                .Length(10, 100).WithMessage("Capital must be between 2 and 100 characters.");
 
             RuleFor(x => x.Population)
                 .GreaterThan(0).WithMessage("Population must be greater than 0.");

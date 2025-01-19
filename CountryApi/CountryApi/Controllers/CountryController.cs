@@ -21,15 +21,22 @@ namespace CountryApi.Controllers
 
         //insert country
         [HttpPost]
-        public async Task<IActionResult> AddCountry(CountryDto country)
+        public async Task<IActionResult> AddCountry([FromBody] CountryDto country)
         {
             try
             {
-                var countryData = await country.BuildAdapter().AdaptToTypeAsync<Country>();
-                await _context.AddAsync(countryData);
-                await _context.SaveChangesAsync();
-                _logger.LogInformation("Country Added");
-                return Ok("Country Added");
+                if (ModelState.IsValid)
+                {
+                    var countryData = await country.BuildAdapter().AdaptToTypeAsync<Country>();
+                    await _context.AddAsync(countryData);
+                    await _context.SaveChangesAsync();
+                    _logger.LogInformation("Country Added");
+                    return Ok("Country Added");
+                }
+                else
+                {
+                    return BadRequest(ModelState);
+                }
             }
             catch (Exception ex)
             {
@@ -97,16 +104,23 @@ namespace CountryApi.Controllers
         {
             try
             {
-                Country? country = await _context.Countries.FirstOrDefaultAsync(y => y.Id == id);
-                if (country != null)
+                if (ModelState.IsValid)
                 {
-                    country = await countryDto.BuildAdapter().AdaptToAsync(country);
-                    await _context.SaveChangesAsync();
-                    return Ok("Country Updated Successfully");
+                    Country? country = await _context.Countries.FirstOrDefaultAsync(y => y.Id == id);
+                    if (country != null)
+                    {
+                        country = await countryDto.BuildAdapter().AdaptToAsync(country);
+                        await _context.SaveChangesAsync();
+                        return Ok("Country Updated Successfully");
+                    }
+                    else
+                    {
+                        return NotFound("Country Not Found By Your ID");
+                    }
                 }
                 else
                 {
-                    return NotFound("Country Not Found By Your ID");
+                    return BadRequest(ModelState);
                 }
             }
             catch (Exception error)
@@ -139,10 +153,41 @@ namespace CountryApi.Controllers
                 return BadRequest(error.Message);
             }
         }
+
+        // Delete all countries
+        [HttpDelete]
+        [Route("delete-all")]
+        public async Task<IActionResult> DeleteAllCountries()
+        {
+            try
+            {
+                // Retrieve all countries from the database
+                var countries = await _context.Countries.ToListAsync();
+
+                if (countries.Any())
+                {
+                    // Remove all countries
+                    _context.Countries.RemoveRange(countries);
+                    await _context.SaveChangesAsync();
+                    return Ok("All countries deleted successfully");
+                }
+                else
+                {
+                    return NotFound("No countries found to delete");
+                }
+            }
+            catch (Exception error)
+            {
+                return BadRequest(error.Message);
+            }
+        }
+
     }
+}
 
 
-    /*//insert multiple country
+
+   /*//insert multiple country
     [HttpPost]
     public async Task<IActionResult> AddCountries(IList<Country> countries)
     {
@@ -163,4 +208,3 @@ namespace CountryApi.Controllers
             return BadRequest(ex.Message);
         }
     }*/
-}
