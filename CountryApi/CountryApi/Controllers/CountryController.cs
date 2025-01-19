@@ -25,17 +25,17 @@ namespace CountryApi.Controllers
         {
             try
             {
-                if (ModelState.IsValid)
+                if (!ModelState.IsValid)
+                { 
+                    return BadRequest(ModelState);
+                }
+                else
                 {
                     var countryData = await country.BuildAdapter().AdaptToTypeAsync<Country>();
                     await _context.AddAsync(countryData);
                     await _context.SaveChangesAsync();
                     _logger.LogInformation("Country Added");
                     return Ok("Country Added");
-                }
-                else
-                {
-                    return BadRequest(ModelState);
                 }
             }
             catch (Exception ex)
@@ -104,7 +104,11 @@ namespace CountryApi.Controllers
         {
             try
             {
-                if (ModelState.IsValid)
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+                else
                 {
                     Country? country = await _context.Countries.FirstOrDefaultAsync(y => y.Id == id);
                     if (country != null)
@@ -117,10 +121,6 @@ namespace CountryApi.Controllers
                     {
                         return NotFound("Country Not Found By Your ID");
                     }
-                }
-                else
-                {
-                    return BadRequest(ModelState);
                 }
             }
             catch (Exception error)
