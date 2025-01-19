@@ -1,7 +1,6 @@
 ﻿using CountryApi.DataAccessLayer;
 using CountryApi.Model;
 using FluentValidation;
-using FluentValidation.AspNetCore;
 using Mapster;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
