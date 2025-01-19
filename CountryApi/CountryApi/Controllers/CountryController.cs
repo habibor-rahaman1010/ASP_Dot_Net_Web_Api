@@ -1,5 +1,7 @@
 ﻿using CountryApi.DataAccessLayer;
 using CountryApi.Model;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Mapster;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,11 +13,18 @@ namespace CountryApi.Controllers
     public class CountryController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly IValidator<CountryDto> _validator;
+        private readonly IValidator<UpdateDto> _updateValidator;
         private readonly ILogger<CountryController> _logger;
 
-        public CountryController(ApplicationDbContext context, ILogger<CountryController> logger)
+        public CountryController(ApplicationDbContext context, 
+            IValidator<CountryDto> validator, 
+            IValidator<UpdateDto> updateValidator,
+            ILogger<CountryController> logger)
         {
             _context = context;
+            _validator = validator;
+            _updateValidator = updateValidator;
             _logger = logger;
         }
 
@@ -25,9 +34,13 @@ namespace CountryApi.Controllers
         {
             try
             {
-                if (!ModelState.IsValid)
-                { 
-                    return BadRequest(ModelState);
+                var validationResult = await _validator.ValidateAsync(country);
+                if (!validationResult.IsValid)
+                {
+                    return BadRequest(new
+                    {
+                        Errors = validationResult.Errors.Select(e => new { e.PropertyName, e.ErrorMessage })
+                    });
                 }
                 else
                 {
@@ -35,13 +48,13 @@ namespace CountryApi.Controllers
                     await _context.AddAsync(countryData);
                     await _context.SaveChangesAsync();
                     _logger.LogInformation("Country Added");
-                    return Ok("Country Added");
+                    return Ok(new { Message = "Country successfully added." });
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogInformation($"{ex.Message}", ex.ToString());
-                return BadRequest(ex.Message);
+                return StatusCode(500, new { Error = "An internal error occurred. Please try again later." });
             }
         }
 
@@ -97,10 +110,11 @@ namespace CountryApi.Controllers
         }
 
 
-        // Update a country by id
+
+       /* // Update a country by id
         [HttpPut]
         [Route("{id}")]
-        public async Task<IActionResult> UpdateCountry(Guid id, UpdateDto countryDto)
+        public async Task<IActionResult> UpdateCountry(Guid id, [FromBody] UpdateDto countryDto)
         {
             try
             {
@@ -127,7 +141,47 @@ namespace CountryApi.Controllers
             {
                 return BadRequest(error.Message);
             }
-        }
+        }*/
+
+
+
+
+         // Update a country by id
+         [HttpPut]
+         [Route("{id}")]
+         public async Task<IActionResult> UpdateCountry(Guid id, [FromBody] UpdateDto countryDto)
+         {
+             try
+             {
+                var validationResult = await _updateValidator.ValidateAsync(countryDto);
+                 if (!validationResult.IsValid)
+                 {
+                     return BadRequest(new
+                     {
+                         Errors = validationResult.Errors.Select(e => new { e.PropertyName, e.ErrorMessage })
+                     });
+                 }
+                 else
+                 {
+                     Country? country = await _context.Countries.FirstOrDefaultAsync(y => y.Id == id);
+                     if (country != null)
+                     {
+                         country = await countryDto.BuildAdapter().AdaptToAsync(country);
+                         await _context.SaveChangesAsync();
+                         return Ok(new { Message = "Country updated successfully." });
+                     }
+                     else
+                     {
+                         return NotFound(new { Message = "Country not found by the provided ID." });
+                     }
+                 }
+             }
+             catch (Exception error)
+             {
+                 _logger.LogError(error, "An error occurred while updating the country.");
+                 return StatusCode(500, new { Error = "An internal error occurred. Please try again later." });
+             }
+         }
 
         // Delete a country by id
         [HttpDelete]

@@ -3,13 +3,10 @@ using FluentValidation;
 
 namespace CountryApi.ModelValidators
 {
-    public class CountryValidator : AbstractValidator<CountryDto>
+    public class CountryUpdateValidator : AbstractValidator<UpdateDto>
     {
-        public CountryValidator()
+        public CountryUpdateValidator()
         {
-            RuleFor(x => x.Id)
-                .NotEmpty().WithMessage("Id must not be empty null.");
-
             RuleFor(x => x.Name)
                 .NotEmpty().WithMessage("Please provide a name. It cannot be empty or null.")
                 .MaximumLength(25).WithMessage("The name can have maximum of 25 characters.");
