@@ -68,18 +68,19 @@ namespace CountryApi.Controllers
                 if (countries.Count == 0)
                 {
                     _logger.LogInformation("No countries exist in the database!");
-                    return NotFound("No countries exist in the database!");
+                    return NotFound(new {Message = "No countries exist in the database!"});
                 }
                 else
                 {
-                    var countryDtos = await countries.BuildAdapter().AdaptToTypeAsync<List<CountryDto>>();
+                    var allCountry = await countries.BuildAdapter().AdaptToTypeAsync<List<CountryDto>>();
                     _logger.LogInformation("Retrive all countries");
-                    return Ok(countryDtos);
+                    return Ok(allCountry);
                 }
             }
             catch (Exception error)
             {
-                return BadRequest(error.Message);
+                _logger.LogInformation(error.Message.ToString());
+                return StatusCode(500, new { Error = "An internal error occurred. Please try again later." });
             }
         }
 
@@ -93,58 +94,22 @@ namespace CountryApi.Controllers
                 Country? country = await _context.Countries.FirstOrDefaultAsync(x => x.Id == id);
                 if (country != null)
                 {
-                    var countryDto = await country.BuildAdapter().AdaptToTypeAsync<CountryDto>();
-                    _logger.LogInformation($"Country ID: {countryDto.Id}");
-                    return Ok(countryDto);
+                    var countryData = await country.BuildAdapter().AdaptToTypeAsync<CountryDto>();
+                    _logger.LogInformation($"Country ID: {countryData.Id}");
+                    return Ok(countryData);
                 }
                 else
                 {
                     _logger.LogInformation($"Country not found {id}");
-                    return NotFound("Country not found");
+                    return NotFound(new {Message = "Country not found" });
                 }
             }
             catch (Exception error)
             {
-                return BadRequest(error.Message);
+                _logger.LogInformation(error.Message.ToString());
+                return StatusCode(500, new { Error = "An internal error occurred. Please try again later." });
             }
         }
-
-
-
-       /* // Update a country by id
-        [HttpPut]
-        [Route("{id}")]
-        public async Task<IActionResult> UpdateCountry(Guid id, [FromBody] UpdateDto countryDto)
-        {
-            try
-            {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
-                else
-                {
-                    Country? country = await _context.Countries.FirstOrDefaultAsync(y => y.Id == id);
-                    if (country != null)
-                    {
-                        country = await countryDto.BuildAdapter().AdaptToAsync(country);
-                        await _context.SaveChangesAsync();
-                        return Ok("Country Updated Successfully");
-                    }
-                    else
-                    {
-                        return NotFound("Country Not Found By Your ID");
-                    }
-                }
-            }
-            catch (Exception error)
-            {
-                return BadRequest(error.Message);
-            }
-        }*/
-
-
-
 
          // Update a country by id
          [HttpPut]
@@ -195,16 +160,17 @@ namespace CountryApi.Controllers
                 {
                     _context.Countries.Remove(country);
                     await _context.SaveChangesAsync();
-                    return Ok("Country Deleted Successfully");
+                    return Ok(new { Message = "Country Deleted Successfully" });
                 }
                 else
                 {
-                    return NotFound("Country Not Found");
+                    return NotFound(new { Message = "Country Not Found" });
                 }
             }
             catch (Exception error)
             {
-                return BadRequest(error.Message);
+                _logger.LogInformation(error.Message.ToString());
+                return StatusCode(500, new { Error = "An internal error occurred. Please try again later." });
             }
         }
 
@@ -223,16 +189,17 @@ namespace CountryApi.Controllers
                     // Remove all countries
                     _context.Countries.RemoveRange(countries);
                     await _context.SaveChangesAsync();
-                    return Ok("All countries deleted successfully");
+                    return Ok(new {Meassage = "All countries deleted successfully" });
                 }
                 else
                 {
-                    return NotFound("No countries found to delete");
+                    return NotFound(new { Meaasge = "No countries found to delete" });
                 }
             }
             catch (Exception error)
             {
-                return BadRequest(error.Message);
+                _logger.LogInformation(error.Message.ToString());
+                return StatusCode(500, new { Error = "An internal error occurred. Please try again later." });
             }
         }
 
@@ -241,24 +208,24 @@ namespace CountryApi.Controllers
 
 
 
-   /*//insert multiple country
-    [HttpPost]
-    public async Task<IActionResult> AddCountries(IList<Country> countries)
+/*//insert multiple country
+[HttpPost]
+public async Task<IActionResult> AddCountries(IList<Country> countries)
+{
+    try
     {
-        try
+        if (countries == null || countries.Count == 0)
         {
-            if (countries == null || countries.Count == 0)
-            {
-                return BadRequest("No countries provided.");
-            }
-
-            await _context.Countries.AddRangeAsync(countries);
-            await _context.SaveChangesAsync();
-
-            return Ok("Countries added successfully");
+            return BadRequest("No countries provided.");
         }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
-    }*/
+
+        await _context.Countries.AddRangeAsync(countries);
+        await _context.SaveChangesAsync();
+
+        return Ok("Countries added successfully");
+    }
+    catch (Exception ex)
+    {
+        return BadRequest(ex.Message);
+    }
+}*/

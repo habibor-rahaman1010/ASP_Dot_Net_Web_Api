@@ -11,8 +11,13 @@ namespace CountryApi.ServiceCollectionExtensions
     {
         public static void AddFluentValidatorRegister (this IServiceCollection services)
         {
-            services.AddValidatorsFromAssemblyContaining<CountryValidator>();
-            services.AddValidatorsFromAssemblyContaining<CountryUpdateValidator>();         
+            //Autometic process
+            //services.AddValidatorsFromAssemblyContaining<CountryValidator>();
+            //services.AddValidatorsFromAssemblyContaining<CountryUpdateValidator>();
+
+            //Menual Process
+            services.AddScoped<IValidator<CountryDto>, CountryValidator>();
+            services.AddScoped<IValidator<UpdateDto>, CountryUpdateValidator>();
         }
     }
 }
